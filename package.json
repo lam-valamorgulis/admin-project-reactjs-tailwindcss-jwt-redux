@@ -50,6 +50,6 @@
     "**/*.{js,jsx,ts,tsx}": [
       "prettier --write"
     ],
-    "*.ts": "npm run type-check"
+    "*.ts": "tslint"
   }
 }
