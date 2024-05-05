@@ -1,28 +1,24 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { NavLink, Outlet } from 'react-router-dom';
+import store from '../store';
+import { classNames } from '../utils';
 
 const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
+  email: store.getState().user.user?.email || 'Tom Cook',
   imageUrl:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 };
+
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
+  { name: 'Dashboard', href: '/games', current: true },
+  { name: 'About', href: '/games/about', current: false },
 ];
 const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
+  { name: store.getState().user.user?.email || 'Tom Cook', href: '#' },
   { name: 'Sign out', href: '#' },
 ];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default function DashBoardLayout() {
   return (
@@ -48,31 +44,22 @@ export default function DashBoardLayout() {
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                       {navigation.map((item) => (
-                        <a
+                        <NavLink
                           key={item.name}
-                          href={item.href}
+                          to={item.href}
                           className={classNames(
                             item.current
                               ? 'border-indigo-500 text-gray-900'
                               : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
                             'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium',
                           )}
-                          aria-current={item.current ? 'page' : undefined}
                         >
                           {item.name}
-                        </a>
+                        </NavLink>
                       ))}
                     </div>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                    <button
-                      type="button"
-                      className="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-3">
                       <div>
@@ -163,9 +150,6 @@ export default function DashBoardLayout() {
                       />
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium text-gray-800">
-                        {user.name}
-                      </div>
                       <div className="text-sm font-medium text-gray-500">
                         {user.email}
                       </div>
@@ -196,18 +180,17 @@ export default function DashBoardLayout() {
           )}
         </Disclosure>
 
-        <div className="py-10">
-          <header>
+        <div className="bg-[#F3F3F4] py-4">
+          {/* <header>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
                 Dashboard
               </h1>
             </div>
-          </header>
+          </header> */}
           <main>
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-              {/* Your content */}
-              tét
+            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 ">
+              <Outlet />
             </div>
           </main>
         </div>
