@@ -14,6 +14,11 @@ import { loginAction } from './pages/actions/loginAction';
 
 // loader
 import { dashBoardLoader } from './pages/loaders/dashBoardLoader';
+import { gamesLoader } from './pages/loaders/gamesLoader';
+
+// components
+import Games from './components/Games';
+import ErrorElement from './components/_ui/ErrorElement';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,29 +36,23 @@ const router = createBrowserRouter([
     action: loginAction,
   },
   {
-    path: '/dashboard',
+    path: '/games',
     element: <DashBoardLayout />,
-    // errorElement: <Error />,
+    errorElement: <Error />,
     loader: dashBoardLoader(store.getState().user.user),
     children: [
       {
         index: true,
-        // element: <Games />,
-        // errorElement: <ErrorElement />,
-        // loader: landingLoader(queryClient),
+        element: <Games />,
+        errorElement: <ErrorElement />,
+        loader: gamesLoader(queryClient),
       },
       {
-        path: 'games/:id',
-        // element: <SingleGame />,
-        // errorElement: <ErrorElement />,
-        // loader: singleProductLoader(queryClient),
+        path: 'about',
+        element: <About />,
+        errorElement: <Error />,
       },
     ],
-  },
-  {
-    path: '/about',
-    element: <About />,
-    // errorElement: <Error />,
   },
   {
     path: '/login',
