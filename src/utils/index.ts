@@ -15,3 +15,9 @@ export const DEVELOPERS = [
   { id: 'electronic-arts', title: 'Electronic Arts' },
   { id: 'capcom', title: 'Capcom' },
 ];
+
+export const PUBLISHERS = [
+  { id: 'microsoft-studios', title: 'Microsoft Studios' },
+  { id: 'electronic-arts', title: 'Electronic Arts' },
+  { id: 'square-enix', title: 'Square Enix' },
+];

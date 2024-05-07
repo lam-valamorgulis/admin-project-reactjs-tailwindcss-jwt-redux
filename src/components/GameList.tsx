@@ -1,31 +1,43 @@
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useLocation, useNavigate } from 'react-router-dom';
 import GameRow from './GameRow';
 import TableHeader from './TableHeader';
+import { useEffect } from 'react';
+import SelectField from './_ui/SelectField';
 
 export default function GameList() {
-  const { games } = useLoaderData() as { games: any[] };
+  const { games, params } = useLoaderData() as { games: any[]; params: any };
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(params);
+    const newUrl = `${window.location.origin}/games?${searchParams.toString()}`;
+    window.history.replaceState({}, '', newUrl);
+  }, [params]);
+
+  const handlePageChange = (viewPerPage: any) => {
+    const searchParams = new URLSearchParams(params);
+    searchParams.set('page_size', viewPerPage.toString());
+    console.log(searchParams.toString());
+    navigate(`${pathname}?${searchParams.toString()}`);
+  };
+
   return (
     <div className="mt-6 max-h-96 overflow-y-scroll rounded-2xl bg-[#ffffff] px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">
-            Users
-          </h1>
-          <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your account including their name, title,
-            email and role.
-          </p>
-        </div>
-        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Add user
-          </button>
+        <div className="mt-4 sm:flex-auto">
+          <SelectField
+            label="View"
+            id="view"
+            options={[
+              { value: 50, label: '50' },
+              { value: 100, label: '100' },
+            ]}
+            handlePageChange={handlePageChange}
+          />
         </div>
       </div>
-      <div className="mt-8 flow-root">
+      <div className="mt-4 flow-root">
         <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle">
             <table className="min-w-full border-separate border-spacing-0 ">
@@ -58,7 +70,12 @@ export default function GameList() {
               </thead>
               <tbody>
                 {games.map((game, gameIdx) => (
-                  <GameRow game={game} gameIdx={gameIdx} games={games} />
+                  <GameRow
+                    game={game}
+                    gameIdx={gameIdx}
+                    games={games}
+                    key={gameIdx}
+                  />
                 ))}
               </tbody>
             </table>

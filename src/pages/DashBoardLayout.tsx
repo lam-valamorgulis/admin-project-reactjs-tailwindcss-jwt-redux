@@ -1,9 +1,13 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useNavigation } from 'react-router-dom';
 import store from '../store';
 import { classNames } from '../utils';
+import Loading from '../components/_ui/Loading';
+import { useDispatch } from 'react-redux';
+import { useQueryClient } from '@tanstack/react-query';
+import { logoutUser } from '../feature/userSlice';
 
 const user = {
   email: store.getState().user.user?.email || 'Tom Cook',
@@ -11,16 +15,24 @@ const user = {
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 };
 
-const navigation = [
+const NAVS = [
   { name: 'Dashboard', href: '/games', current: true },
   { name: 'About', href: '/games/about', current: false },
 ];
-const userNavigation = [
-  { name: store.getState().user.user?.email || 'Tom Cook', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
 
 export default function DashBoardLayout() {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const isPageLoading = navigation.state === 'loading';
+
+  const handleLogout = () => {
+    navigate('/');
+    dispatch(logoutUser());
+    queryClient.removeQueries();
+  };
+
   return (
     <>
       <div className="min-h-full">
@@ -43,7 +55,7 @@ export default function DashBoardLayout() {
                       />
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                      {navigation.map((item) => (
+                      {NAVS.map((item) => (
                         <NavLink
                           key={item.name}
                           to={item.href}
@@ -82,21 +94,32 @@ export default function DashBoardLayout() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {userNavigation.map((item) => (
-                            <Menu.Item key={item.name}>
-                              {({ active }) => (
-                                <a
-                                  href={item.href}
-                                  className={classNames(
-                                    active ? 'bg-gray-100' : '',
-                                    'block px-4 py-2 text-sm text-gray-700',
-                                  )}
-                                >
-                                  {item.name}
-                                </a>
-                              )}
-                            </Menu.Item>
-                          ))}
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                className={classNames(
+                                  active ? 'bg-gray-100' : '',
+                                  'block px-4 py-2 text-sm text-gray-700',
+                                )}
+                              >
+                                {store.getState().user.user?.email ||
+                                  'Tom Cook'}
+                              </a>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                className={classNames(
+                                  active ? 'bg-gray-100' : '',
+                                  'block px-4 py-2 text-sm text-gray-700',
+                                )}
+                                onClick={handleLogout}
+                              >
+                                Sign out
+                              </a>
+                            )}
+                          </Menu.Item>
                         </Menu.Items>
                       </Transition>
                     </Menu>
@@ -123,7 +146,7 @@ export default function DashBoardLayout() {
 
               <Disclosure.Panel className="sm:hidden">
                 <div className="space-y-1 pb-3 pt-2">
-                  {navigation.map((item) => (
+                  {NAVS.map((item) => (
                     <Disclosure.Button
                       key={item.name}
                       as="a"
@@ -163,16 +186,19 @@ export default function DashBoardLayout() {
                     </button>
                   </div>
                   <div className="mt-3 space-y-1">
-                    {userNavigation.map((item) => (
-                      <Disclosure.Button
-                        key={item.name}
-                        as="a"
-                        href={item.href}
-                        className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                      >
-                        {item.name}
-                      </Disclosure.Button>
-                    ))}
+                    <Disclosure.Button
+                      as="a"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    >
+                      {store.getState().user.user?.email || 'Tom Cook'}{' '}
+                    </Disclosure.Button>
+                    <Disclosure.Button
+                      onClick={handleLogout}
+                      as="a"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    >
+                      Sign out
+                    </Disclosure.Button>
                   </div>
                 </div>
               </Disclosure.Panel>
@@ -181,16 +207,9 @@ export default function DashBoardLayout() {
         </Disclosure>
 
         <div className="bg-[#F3F3F4] py-4">
-          {/* <header>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-                Dashboard
-              </h1>
-            </div>
-          </header> */}
           <main>
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 ">
-              <Outlet />
+              {isPageLoading ? <Loading /> : <Outlet />}
             </div>
           </main>
         </div>

@@ -32,7 +32,7 @@ const allGamesQuery = (queryParams: QueryParams) => {
       creators ?? '',
       platforms ?? '',
       publishers ?? '',
-      page_size ?? 20,
+      page_size ?? 100,
       page ?? 1,
     ],
     queryFn: () =>
@@ -55,6 +55,9 @@ type Game = {
 };
 
 type ResponseData = {
+  next: any;
+  previous: any;
+  count: any;
   results: Game[];
   // meta: any; // uncomment and replace `any` with the actual type if needed
 };
@@ -62,25 +65,28 @@ type ResponseData = {
 type LoaderResponse = {
   games: Game[];
   params: Record<string, string>;
+  count: number;
 };
 
 export const gamesLoader =
   (queryClient: QueryClient) =>
   async ({ request }: { request: Request }): Promise<LoaderResponse> => {
     const entries = [...new URL(request.url).searchParams.entries()];
-    const params = Object.fromEntries(
+    let params = Object.fromEntries(
       entries.filter(([, value]) => value !== ''),
     );
-    // Set default developer parameter if it's not present
-    // if (!params.developers) {
-    //   params = { ...params, developers: 'ubisoft' };
-    // }
+
+    params = {
+      developers: params.developers || 'ubisoft',
+      page: params.page || '1',
+      page_size: params.page_size || '50',
+      ...params,
+    };
 
     const response = (await queryClient.ensureQueryData(
       allGamesQuery(params),
     )) as { data: ResponseData };
-    console.log(response.data, params);
     const games = response.data.results;
-    // const meta = response.data.meta; // uncomment if needed
-    return { games, params };
+    const count = response.data.count;
+    return { games, params, count };
   };

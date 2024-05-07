@@ -85,9 +85,13 @@ export default function GameRow({ game, gameIdx, games }: any) {
         )}
       >
         <span
-          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${genreColors[game.genres[0].name] || 'bg-gray-50 text-gray-700 ring-gray-600'}`}
+          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
+            game.genres[0]
+              ? genreColors[game.genres[0].name]
+              : 'bg-gray-50 text-gray-700 ring-gray-600'
+          }`}
         >
-          {game.genres[0].name}
+          {game.genres[0] ? game.genres[0].name : 'Unknown'}
         </span>
       </td>
       <td

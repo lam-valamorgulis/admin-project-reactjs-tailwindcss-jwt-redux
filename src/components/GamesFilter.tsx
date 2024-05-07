@@ -2,7 +2,7 @@ import { Form, Link } from 'react-router-dom';
 import SelectField from './_ui/SelectField';
 import InputField from './_ui/InputField';
 import RadioGroup from './_ui/RadioGroup';
-import { DEVELOPERS } from '../utils';
+import { DEVELOPERS, PUBLISHERS } from '../utils';
 
 export default function GamesFilter() {
   return (
@@ -54,23 +54,15 @@ export default function GamesFilter() {
                       { value: '7', label: 'Nintendo Switch' },
                     ]}
                   />
-                  <SelectField
+                  <RadioGroup
                     label="Publishers"
                     id="publishers"
-                    options={[
-                      { value: '', label: 'All' },
-                      {
-                        value: 'microsoft-studios',
-                        label: 'microsoft-studios',
-                      },
-                      { value: 'electronic-arts', label: 'electronic-arts' },
-                      { value: 'square-enix', label: 'square-enix' },
-                    ]}
+                    options={PUBLISHERS}
                   />
                 </tr>
               </tbody>
             </table>
-            <div className="flex flex-1 justify-end gap-3">
+            <div className="mt-4 flex flex-1 justify-end gap-3">
               <Link
                 to="/games"
                 type="button"
